@@ -1,4 +1,4 @@
-const host = "http://localhost:8080/";
+const host = "http://localhost:8000/";
 
 export default class APIService {
     get(endpoint) {

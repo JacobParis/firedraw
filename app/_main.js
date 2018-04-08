@@ -4,6 +4,7 @@ import './main.scss';
 
 import Navigo from './utilities/navigo.js';
 
+import HomeScene from './scenes/home.js';
 import RoomScene from './scenes/room.js';
 
 let router;
@@ -16,24 +17,25 @@ function initRouter() {
         return;
     }
 
-    const root = document.location.href;
+    const root = "http://localhost:8000/";
     console.log(root);
-    const useHash = true; // Defaults to: false
-    const hash = '#!'; // Defaults to: '#'
-    router = new Navigo(root, useHash, hash);
+    router = new Navigo(root);
     router.on({
         /*'foo/:id': params => {
             loadScene(new FooScene(), params)
         },*/
-        '*': () => {
-            loadScene(new RoomScene())
-        }
+        '': () => loadScene(new HomeScene(router)),
+        '/room/:room': (params) => {
+            loadScene(new RoomScene(router, params));
+        },
+        '*': () => router.navigate('')
     }).resolve();
 }
 
 // We use the load and render methods instead of the constructor
 // Because this way we can hijack the render to execute after the load
 function loadScene(scene, params) {
+    if(scene.ABORT) return router.navigate('/');
     scene.onRender = () => {
         const entry = document.getElementById("yield");
         entry.innerHTML = "";

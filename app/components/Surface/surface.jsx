@@ -1,15 +1,14 @@
 export default class Surface {
-    constructor(socket) {
-        this.socket = socket;
+    constructor() {
 
-        this.canvas = <canvas id="canvas" width="300" height="300"></canvas>
+        this.canvas = <canvas id="canvas" width="300" height="480"></canvas>
         // Disable text selection on the canvas
         this.canvas.addEventListener('mousedown', (() => false));
 
-        this.socket.on('drawCanvas', (canvasToDraw) => {
+        /*
+        this.socket.on('DRAW-drawCanvas', (canvasToDraw) => {
             console.log(canvasToDraw);
             if (canvasToDraw) {
-                console.log("Should be drawing a canvas");
                 //drawLayer.width(drawLayer.clientWidth);
                 this.context.lineJoin = 'round';
 
@@ -28,16 +27,12 @@ export default class Surface {
                 }
             }
         });
-
-        this.socket.on('draw', (line, clearBuffer) => this.draw(line, clearBuffer));
-
+        */
 
         this.context = this.canvas.getContext("2d");
         this.context.beginPath();
         this.context.lineTo(300, 300);
         this.context.stroke();
-        this.isMyTurn;
-
 
         /** OPTIONS */
         /** Stores the selected colour as a string */
@@ -49,28 +44,33 @@ export default class Surface {
 
         this.blackInk = <span class="ink black" />
         this.blackInk.addEventListener('click', () => {
+            console.log("black");
             this.selectedColour = '#252525';
         });
 
-        this.colorInk = <span class="ink" />
-        this.colorInk.addEventListener('click', () => {
-            const colour = this.colorInk.style.backgroundColor;
-            this.selectedColour = colour;
-        });
+        const palette = <panel>{this.blackInk}</panel>;
+
+        this.paletteElements = [];
+        for(let colourName of ["red", "yellow", "green", "cyan", "blue", "magenta"]) {
+            const colourInk = <span class={colourName + " ink"} />
+            colourInk.addEventListener('click', () => {
+                this.selectedColour = document.defaultView.getComputedStyle(colourInk, null).getPropertyValue('background-color');
+
+                this.hideRestOfPalette(colourInk);
+            });
+            palette.appendChild(colourInk);
+            this.paletteElements.push(colourInk);
+        }
 
         this.drawOptions = (
             <footer class="options">
-                <panel>
-                    {this.blackInk}
-                    {this.colorInk}                    
-                </panel>
+                {palette}
             </footer>
         );
 
         this.gamePanel = (
-            <div>
+            <div class="surface-container">
                 {this.canvas}
-                {this.drawOptions}
             </div>
         );
 
@@ -80,7 +80,7 @@ export default class Surface {
     }
 
     
-    addListeners() {
+    unlock() {
         this.canvas.addEventListener('mousedown', this.drawHandler, true);
         this.canvas.addEventListener('touchstart', this.drawHandler, true);
         
@@ -93,7 +93,7 @@ export default class Surface {
         this.canvas.addEventListener('touchcancel', this.stopHandler, true);
     }
 
-    removeListeners() {
+    lock() {
         console.log("Remove Listeners");
 
         this.canvas.removeEventListener('mousedown', this.drawHandler, true);
@@ -113,7 +113,12 @@ export default class Surface {
         this.isPainting = true;
         const x = e.pageX || e.targetTouches[0].pageX;
         const y = e.pageY || e.targetTouches[0].pageY;
-        const newpoint = { x: (x - this.gamePanel.offsetLeft) / this.canvas.offsetWidth * this.canvas.width, y: (y - this.gamePanel.offsetTop) / this.canvas.offsetHeight * this.canvas.height };
+
+        const newpoint = {
+            x: (x - this.canvas.offsetLeft) / this.canvas.offsetWidth * this.canvas.width, 
+            y: (y - this.canvas.offsetTop) / this.canvas.offsetHeight * this.canvas.height 
+        };
+
         const line = { from: null, to: newpoint, color: this.selectedColour };
 
         this.draw(line, true);
@@ -126,7 +131,12 @@ export default class Surface {
         
         const x = e.pageX || e.targetTouches[0].pageX;
         const y = e.pageY || e.targetTouches[0].pageY;
-        const newpoint = { x: (x - this.gamePanel.offsetLeft) / this.canvas.offsetWidth * this.canvas.width, y: (y - this.gamePanel.offsetTop) / this.canvas.offsetHeight * this.canvas.height };
+
+        const newpoint = { 
+            x: (x - this.canvas.offsetLeft) / this.canvas.offsetWidth * this.canvas.width, 
+            y: (y - this.canvas.offsetTop) / this.canvas.offsetHeight * this.canvas.height 
+        };
+
         const line = { from: this.lastpoint, to: newpoint, color: this.selectedColour };
 
 
@@ -137,11 +147,6 @@ export default class Surface {
     stopInk(e) {
         console.log("stop");
         this.isPainting = false;
-        /*this.socket.emit('draw', {
-            to: lastpoint, 
-            color: selectedcolor, 
-            stop: true 
-        });*/
     }
 
     draw(line, clearBuffer) {
@@ -212,6 +217,7 @@ export default class Surface {
             delta.x = Math.abs(point.to.x - this.points[0].to.x);
             delta.y = Math.abs(point.to.y - this.points[0].to.y);
         }
+
         const velocity = Math.cbrt(Math.pow(delta.x, 2) + Math.pow(delta.y, 2));
 
         this.context.lineJoin = 'round';
@@ -230,10 +236,8 @@ export default class Surface {
         this.context.closePath();
         this.context.stroke();
 
-        if (this.isMyTurn) {
-            point.color = line.color;
-            this.socket.emit('draw', point, clearBuffer);
-        }
+        point.color = line.color;
+        this.onDraw(point, clearBuffer);
 
         if (this.points.length > 5) {
             this.stoppedMoving = setInterval(() => this.catchUp(), 16);
@@ -283,9 +287,7 @@ export default class Surface {
             this.context.lineTo(point.to.x, point.to.y);
             this.context.closePath();
             this.context.stroke();
-            if (this.isMyTurn) {
-                this.socket.emit('draw', point);
-            }
+            this.onDraw(point);
         } else {
             clearInterval(this.stoppedMoving);
         }
@@ -293,4 +295,6 @@ export default class Surface {
     render() {
         return this.gamePanel;
     }
+
+    onDraw() { console.log('No draw handler set');}
 }

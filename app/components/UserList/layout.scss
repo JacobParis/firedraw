@@ -1,0 +1,66 @@
+.user-list {
+    position: absolute;
+    top: 4rem;
+    width: 100%;
+    text-decoration:  none;
+    list-style:  none;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 1rem;
+    user-select: none;
+    pointer-events: none;
+    &.hide-small {
+        @media (max-width: 450px) {
+            .user-bubble {
+                display: none;
+            }
+        }
+    }
+    li {
+        font-size: 2rem;
+        position: relative;
+        margin-bottom: 1.5rem; // Half the bubble size
+        clear: right;
+        &:nth-child(odd) {
+            text-align: left;
+            .user-bubble {
+                float: left;
+            }
+            .user-message {
+                float: left;
+            }
+        }
+        &:nth-child(even) {
+            text-align: right;
+            .user-bubble {
+                float: right;
+            }
+            .user-message {
+                float: right;
+            }
+        }
+        &.current {
+            color: white;
+        }
+        .user-bubble {
+            text-transform: uppercase;
+            padding: 0.25rem;
+            border-radius: 50%;
+            box-sizing: border-box;
+            width: 3rem;
+            height: 3rem;
+            text-align: center;
+        }
+        .user-message {
+            font-size: 1rem;
+            line-height: 2rem;
+            padding: 0.5rem;
+            transition: transform 2s, opacity 2s;
+            &.rise {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+        }
+    }
+}
