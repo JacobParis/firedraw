@@ -172,29 +172,6 @@ span.ink {
     box-sizing: border-box;
 	width: 100%;
 }
-.guess {
-	margin: 0 auto;
-	padding: 0.5rem;
-	opacity: 1;
-	transition: opacity 0.4s;
-    z-index: 2;
-    position: relative;
-}
-
-#chatinput {
-    background: #b71c1c;
-    color: rgba(255,255,255,0.8);
-	border-radius: 2rem;
-	border: none;
-    padding: 1rem;
-    font-size: 1.2rem;
-    width: 100%;
-    box-sizing: border-box;
-    position: absolute;
-    right: 0;
-    left: 0;
-    bottom: 0;
-}
 button.input-submit {
     font-size: 1.2rem;
     width: 3.5rem;

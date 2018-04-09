@@ -3,7 +3,7 @@ import DrawToolbar from '../components/drawtoolbar.js';
 import StatusButton from '../components/statusbutton.js';
 import Card from '../components/card.js';
 import UserList from '../components/userlist.js';
-import Chat from '../components/chat.js';
+import LetterButtons from '../components/letterbuttons.js';
 
 import API from '../utilities/apiservice.js';
 const api = new API();
@@ -35,7 +35,11 @@ export default class RoomScene {
     }
 
     load() { 
-        this.socket = io.connect('http://localhost:8000/', {
+        let host = 'http://firedraw.ca/';
+        if (document.baseURI.endsWith("?dev")) {
+            host = 'http://localhost:8000/';
+        }
+        this.socket = io.connect(host, {
             query: `room=${this.room.name}&user=${this.playerName}&colour=${this.playerColour}`,
             path: '/io'
         });
@@ -110,6 +114,7 @@ export default class RoomScene {
                 this.statusButton.hide();
                 this.card.hide();
                 this.chatElement.classList.remove("hide");
+                this.chat.loadLetters(msg.letters);
             } else {
                 this.drawingTimer = setInterval(() => this.timerTick(), 1000);
             }
@@ -130,10 +135,10 @@ export default class RoomScene {
             this.surface.selectedColour = selectedColour;
         });
         
-        this.chat = new Chat(this.socket);
+        this.chat = new LetterButtons(this.socket);
         this.chat.colour = this.playerColour;
-        this.chat.messageInput.disabled = false;
-        this.chat.messageInput.focus();
+        //this.chat.messageInput.disabled = false;
+        //this.chat.messageInput.focus();
         this.chatElement = this.chat.render();
         this.chatElement.classList.add("fix-bottom");
         this.chatElement.classList.add("hide");

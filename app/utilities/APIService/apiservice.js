@@ -1,5 +1,8 @@
-const host = "http://localhost:8000/";
+let host = 'http://firedraw.ca/';
 
+if (document.baseURI.endsWith("?dev")) {
+    host = 'http://localhost:8000/';
+}
 export default class APIService {
     get(endpoint) {
         return makeRequest({ method: "GET", url: host + endpoint })
