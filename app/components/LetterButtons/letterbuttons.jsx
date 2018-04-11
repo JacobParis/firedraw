@@ -4,6 +4,8 @@ export default class LetterButtons {
     constructor(socket) {
         this.socket = socket;
 
+        this.display = <div class="letters display" />;
+
         this.letters = <div class="letters" />;
         this.letterElements = [];
         this.submitButton = <button class="letters-submit" >-></button>
@@ -20,7 +22,8 @@ export default class LetterButtons {
         });
 
         this.message = "";
-        
+        this.display.innerHTML = "";
+
         for(let element of this.letterElements) {
             element.classList.remove("disabled");
         }
@@ -55,6 +58,7 @@ export default class LetterButtons {
         if (element.classList.contains('disabled')) {
             return;
         }
+        this.display.appendChild(element.cloneNode(true));
 
         element.classList.add("disabled");
         this.message = this.message + element.innerText;
@@ -66,6 +70,7 @@ export default class LetterButtons {
         return (
             <div>
                 <div class={"guess"}>
+                    {this.display}
                     {this.letters}
                     {this.submitButton}
                 </div>
