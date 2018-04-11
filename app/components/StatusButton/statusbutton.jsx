@@ -22,12 +22,12 @@ export default class StatusButton {
 
     bold() {
         this.button.classList.remove(`${this.colour}-text`);
-        this.button.classList.add(`${this.colour}-dark`);
+        this.button.classList.add(`${this.colour}`);
     }
     
     debold() {
         this.button.classList.add(`${this.colour}-text`);
-        this.button.classList.remove(`${this.colour}-dark`);
+        this.button.classList.remove(`${this.colour}`);
     }
     
     render () {

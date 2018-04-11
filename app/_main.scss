@@ -97,13 +97,9 @@ main {
 /* -------------------------- */
 
 .section-game {
-    display: flex;
-    position: relative;
+    //display: flex;
+    //position: relative;
     .surface-container {
-        width: 100%;
-        text-align: center;
-        padding: 5rem;
-        transition: padding 1s;
         &.maximise {
             @media (max-width: 450px) {
                 padding: 0;
@@ -121,11 +117,6 @@ main {
     border-radius: 0.5rem;
     width: 100%;
     max-width: 300px;
-    transition: box-shadow 1s;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    &.raised {
-        box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);    
-    }
 }
 
 .game-toolbar {
@@ -138,14 +129,15 @@ main {
 }
 
 span.ink {
-	display: inline-block;
 	height: 2rem;
-	width: 2rem;
-	margin: 0 0.25rem;
-	cursor: pointer;
-    border-radius: 50%;
-	-webkit-transition: opacity 1s;
-	transition: opacity 1s;
+    max-width: 4rem;
+    margin: 0 0.25rem;
+    cursor: pointer;
+    border-radius: 4px;
+    -webkit-transition: opacity 1s;
+    transition: opacity 1s;
+    flex: 1;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.12), 0 10px 10px rgba(0,0,0,0.06);
 }
 
 .black {
@@ -384,6 +376,9 @@ button {
     }
     &-dark {
         background-color: #b71c1c;
+        &-text {
+            color: #b71c1c;
+        }
     }
 }
 
@@ -395,6 +390,9 @@ button {
     }
     &-dark {
         background-color: #ff6f00;
+        &-text {
+            color: #ff6f00;
+        }
     }
 }
 
@@ -405,6 +403,9 @@ button {
     }
     &-dark {
         background-color: #1b5e20;
+        &-text {
+            color: #1b5e20;
+        }
     }
 }
 
@@ -415,6 +416,9 @@ button {
     }
     &-dark {
         background-color: #00838f;
+        &-text {
+            color: #00838f;
+        }
     }
 }
 
@@ -425,6 +429,9 @@ button {
     }
     &-dark {
         background-color: #283593;
+        &-text {
+            color: #283593;
+        }
     }
 }
 
@@ -435,5 +442,78 @@ button {
     }
     &-dark {
         background-color: #6a1b9a;
+        &-text {
+            color: #6a1b9a;
+        }
     }
 }
+
+.sunburst {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.9));
+    b {
+        opacity: 0.3;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        display: block;
+        width: 0;
+        height: 0;
+        color: inherit;
+        border-width: 20vh 200vh;
+        border-top-color: transparent;
+        border-bottom-color: transparent;
+        border-style: solid;
+        transform: translate(-50%, -50%); 
+        -moz-transform: translate(-50%, -50%); 
+        -webkit-transform: translate(-50%, -50%); 
+        &:nth-child(1) { 
+            transform: translate(-50%, -50%) rotate(20deg); 
+            -moz-transform: translate(-50%, -50%) rotate(20deg);  
+            -webkit-transform: translate(-50%, -50%) rotate(20deg);  
+        }
+        &:nth-child(2) { 
+            transform: translate(-50%, -50%) rotate(40deg); 
+            -moz-transform: translate(-50%, -50%) rotate(40deg);  
+            -webkit-transform: translate(-50%, -50%) rotate(40deg);  
+        }
+        &:nth-child(3) { 
+            transform: translate(-50%, -50%) rotate(60deg); 
+            -moz-transform: translate(-50%, -50%) rotate(60deg);  
+            -webkit-transform: translate(-50%, -50%) rotate(60deg);  
+        }
+        &:nth-child(4) { 
+            transform: translate(-50%, -50%) rotate(80deg); 
+            -moz-transform: translate(-50%, -50%) rotate(80deg);  
+            -webkit-transform: translate(-50%, -50%) rotate(80deg);  
+        }
+        &:nth-child(5) { 
+            transform: translate(-50%, -50%) rotate(100deg);
+            -moz-transform: translate(-50%, -50%) rotate(100deg);
+            -webkit-transform: translate(-50%, -50%) rotate(100deg);
+        }
+        &:nth-child(6) { 
+            transform: translate(-50%, -50%) rotate(120deg);
+            -moz-transform: translate(-50%, -50%) rotate(120deg);
+            -webkit-transform: translate(-50%, -50%) rotate(120deg);
+        }
+        &:nth-child(7) { 
+            transform: translate(-50%, -50%) rotate(140deg);
+            -moz-transform: translate(-50%, -50%) rotate(140deg);
+            -webkit-transform: translate(-50%, -50%) rotate(140deg);
+        }
+        &:nth-child(8) { 
+            transform: translate(-50%, -50%) rotate(160deg);
+            -moz-transform: translate(-50%, -50%) rotate(160deg);
+            -webkit-transform: translate(-50%, -50%) rotate(160deg);
+        }
+        &:nth-child(9) { 
+            transform: translate(-50%, -50%) rotate(180deg);
+            -moz-transform: translate(-50%, -50%) rotate(180deg);
+            -webkit-transform: translate(-50%, -50%) rotate(180deg);
+        }
+    }
+}
+

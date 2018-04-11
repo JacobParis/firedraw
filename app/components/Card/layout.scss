@@ -5,6 +5,7 @@
     box-sizing: border-box;
     padding: 5rem;
     transition: padding 1s;
+    transform-style: preserve-3d;
     &.maximise {
         @media (max-width: 450px) {
             padding: 0;
@@ -17,12 +18,18 @@
         width: 100%;
         max-width: 300px;
         height: 100%;
+        max-height: 480px;
         margin: auto;
         display: flex;
         align-items: center;
         background: white;
         border-radius: 0.5rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        transition: all 0.5s;
+        backface-visibility: hidden;
+        &.back {
+            transform: rotateY(180deg);
+        }
     }
     .card-center-text {
         width: 100%;
