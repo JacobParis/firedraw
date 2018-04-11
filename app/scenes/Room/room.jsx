@@ -112,7 +112,7 @@ export default class RoomScene {
                 console.log("Not you draw");
                 this.title.innerText = this.room.name + ': ' + msg.name + '\'s drawing';
                 this.statusButton.hide();
-                this.card.hide();
+                this.card.setGameCard(this.surfaceContainer);
                 this.chatElement.classList.remove("hide");
                 this.chat.loadLetters(msg.letters);
             } else {
@@ -143,14 +143,13 @@ export default class RoomScene {
         this.chatElement.classList.add("fix-bottom");
         this.chatElement.classList.add("hide");
         
-        this.cardContainer = this.card.render();
+        this.cardContainer = this.card.card;
         this.surfaceContainer = this.surface.render();
 
         this.gameSection = (
             <section class="section-game">
                 {this.userList.render()}
                 {this.cardContainer}
-                {this.surfaceContainer}
             </section>
         );
 
@@ -172,9 +171,9 @@ export default class RoomScene {
         this.statusButton.onClick = () => {
             this.socket.emit('end-turn', {reason: "SKIP"});
             this.resetTimer();
-            this.card.hide();
-            this.card.resetClick();
-            this.statusButton.onClick = () => console.log("No click handler set");
+            //this.card.hide();
+            //this.card.resetClick();
+            //this.statusButton.onClick = () => console.log("No click handler set");
         };
       
         // Hide the game toolbar
@@ -182,12 +181,10 @@ export default class RoomScene {
         this.chatElement.classList.add("hide");
         
         // Show the card that starts the round
-        this.card.show();
-        this.card.setText('START DRAWING');
+        this.card.becomeTextCard('START DRAWING');
         this.card.onClick = () => {
-            this.card.hide();
             this.socket.emit('DRAW-ready');
-            this.card.resetClick();
+            this.card.becomeGameCard(this.surfaceContainer);
         }
     }
     
@@ -257,7 +254,10 @@ export default class RoomScene {
     render() {
         //console.log("RENDERING", this.data);
         return (
-            <main>
+            <main class={this.playerColour}>
+                <div class={this.playerColour + "-dark-text sunburst"}>
+                    <b /><b /><b /><b /><b /><b /><b /><b /><b />
+                </div>
                 <header class="toolbar">
                     {this.title}
                 </header>

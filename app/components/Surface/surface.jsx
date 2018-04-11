@@ -68,12 +68,6 @@ export default class Surface {
             </footer>
         );
 
-        this.gamePanel = (
-            <div class="surface-container">
-                {this.canvas}
-            </div>
-        );
-
         this.drawHandler = this.drawInk.bind(this);
         this.moveHandler = this.moveInk.bind(this);
         this.stopHandler = this.stopInk.bind(this);
@@ -293,7 +287,7 @@ export default class Surface {
         }
     }
     render() {
-        return this.gamePanel;
+        return this.canvas;
     }
 
     onDraw() { console.log('No draw handler set');}
