@@ -107,10 +107,10 @@ export default class Surface {
         this.isPainting = true;
         const x = e.pageX || e.targetTouches[0].pageX;
         const y = e.pageY || e.targetTouches[0].pageY;
-
+        const offset = this.canvas.getBoundingClientRect();
         const newpoint = {
-            x: (x - this.canvas.offsetLeft) / this.canvas.offsetWidth * this.canvas.width, 
-            y: (y - this.canvas.offsetTop) / this.canvas.offsetHeight * this.canvas.height 
+            x: (x - offset.left) / this.canvas.offsetWidth * this.canvas.width,
+            y: (y - offset.top) / this.canvas.offsetHeight * this.canvas.height
         };
 
         const line = { from: null, to: newpoint, color: this.selectedColour };
@@ -125,10 +125,10 @@ export default class Surface {
         
         const x = e.pageX || e.targetTouches[0].pageX;
         const y = e.pageY || e.targetTouches[0].pageY;
-
+        const offset = this.canvas.getBoundingClientRect();
         const newpoint = { 
-            x: (x - this.canvas.offsetLeft) / this.canvas.offsetWidth * this.canvas.width, 
-            y: (y - this.canvas.offsetTop) / this.canvas.offsetHeight * this.canvas.height 
+            x: (x - offset.left) / this.canvas.offsetWidth * this.canvas.width, 
+            y: (y - offset.top) / this.canvas.offsetHeight * this.canvas.height 
         };
 
         const line = { from: this.lastpoint, to: newpoint, color: this.selectedColour };
