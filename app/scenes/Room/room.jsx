@@ -95,7 +95,18 @@ export default class RoomScene {
 
         this.surface = new Surface();
         this.socket.on('DRAW-draw', (line, clearBuffer) => this.surface.draw(line, clearBuffer));
-        this.socket.on('startDrawing', (word) => this.beginDrawing(word));
+        this.socket.on('start-drawing', (word) => {
+            console.log('on start-drawing');
+            this.beginDrawing(word)
+            this.card.resetClick();
+
+            const heading = <h2 class="card-header">{word}</h2>;
+            console.log("alpha");
+            this.card.setElements([
+                heading,
+                this.surfaceContainer
+            ]);
+        });
         
         /**
          * msg
@@ -112,7 +123,8 @@ export default class RoomScene {
                 console.log("Not you draw");
                 this.title.innerText = this.room.name + ': ' + msg.name + '\'s drawing';
                 this.statusButton.hide();
-                this.card.setGameCard(this.surfaceContainer);
+                this.card.resetClick();
+                this.card.setElements(this.surfaceContainer);
                 this.chatElement.classList.remove("hide");
                 this.chat.loadLetters(msg.letters);
             } else {
@@ -181,10 +193,14 @@ export default class RoomScene {
         this.chatElement.classList.add("hide");
         
         // Show the card that starts the round
-        this.card.becomeTextCard('START DRAWING');
+        console.log("delta");
+        this.card.setElements(<p class="card-center-text">CARD</p>);
         this.card.onClick = () => {
-            this.socket.emit('DRAW-ready');
-            this.card.becomeGameCard(this.surfaceContainer);
+            this.socket.emit('request-card');
+            this.card.resetClick();
+            //this.socket.emit('DRAW-ready');
+
+            //this.card.setElements(this.surfaceContainer);
         }
     }
     
@@ -258,9 +274,6 @@ export default class RoomScene {
                 <div class={this.playerColour + "-dark-text sunburst"}>
                     <b /><b /><b /><b /><b /><b /><b /><b /><b />
                 </div>
-                <header class="toolbar">
-                    {this.title}
-                </header>
                 {this.gameSection}
                 <section class="bottom">
                     {this.toolbar.render()}
