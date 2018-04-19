@@ -30,9 +30,9 @@ export default class UserList {
                 this.users[user.name] = {
                     position: i,
                     name: user.name,
-                    colour: user.colour,
+                    color: user.color,
                     keep: true
-                    // should have colour here?
+                    // should have color here?
                 };
             }
         }
@@ -54,7 +54,7 @@ export default class UserList {
         for(let user of users) {
 
             const initial = user.name.charAt(0);
-            const element = <li><span class={"user-bubble " + user.colour}>{initial}</span></li>
+            const element = <li><span class={"user-bubble " + user.color}>{initial}</span></li>
 
             if (this.currentUser === user.name) {
                 element.classList.add("current");
@@ -71,7 +71,7 @@ export default class UserList {
 
         if(!user) return;
 
-        const messageElement = <span class={"user-message " + user.colour + "-text"}>{message}</span>;
+        const messageElement = <span class={"user-message " + user.color + "-text"}>{message}</span>;
         setTimeout(() => messageElement.classList.add('rise'), 1000);
         setTimeout(() => messageElement.parentNode.removeChild(messageElement), 3000);
 

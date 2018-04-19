@@ -35,8 +35,8 @@ export default class Surface {
         this.context.stroke();
 
         /** OPTIONS */
-        /** Stores the selected colour as a string */
-        this.selectedColour = '#ff0000';
+        /** Stores the selected color as a string */
+        this.selectedColor = '#ff0000';
         // An array of points to drip ink
         this.points = [];
         // Stores an interval timer from the last time we moved the cursor
@@ -45,21 +45,21 @@ export default class Surface {
         this.blackInk = <span class="ink black" />
         this.blackInk.addEventListener('click', () => {
             console.log("black");
-            this.selectedColour = '#252525';
+            this.selectedColor = '#252525';
         });
 
         const palette = <panel>{this.blackInk}</panel>;
 
         this.paletteElements = [];
-        for(let colourName of ["red", "yellow", "green", "cyan", "blue", "magenta"]) {
-            const colourInk = <span class={colourName + " ink"} />
-            colourInk.addEventListener('click', () => {
-                this.selectedColour = document.defaultView.getComputedStyle(colourInk, null).getPropertyValue('background-color');
+        for(let colorName of ["red", "yellow", "green", "cyan", "blue", "magenta"]) {
+            const colorInk = <span class={colorName + " ink"} />
+            colorInk.addEventListener('click', () => {
+                this.selectedColor = document.defaultView.getComputedStyle(colorInk, null).getPropertyValue('background-color');
 
-                this.hideRestOfPalette(colourInk);
+                this.hideRestOfPalette(colorInk);
             });
-            palette.appendChild(colourInk);
-            this.paletteElements.push(colourInk);
+            palette.appendChild(colorInk);
+            this.paletteElements.push(colorInk);
         }
 
         this.drawOptions = (
@@ -113,7 +113,7 @@ export default class Surface {
             y: (y - offset.top) / this.canvas.offsetHeight * this.canvas.height
         };
 
-        const line = { from: null, to: newpoint, color: this.selectedColour };
+        const line = { from: null, to: newpoint, color: this.selectedColor };
 
         this.draw(line, true);
         this.lastpoint = newpoint;
@@ -131,7 +131,7 @@ export default class Surface {
             y: (y - offset.top) / this.canvas.offsetHeight * this.canvas.height 
         };
 
-        const line = { from: this.lastpoint, to: newpoint, color: this.selectedColour };
+        const line = { from: this.lastpoint, to: newpoint, color: this.selectedColor };
 
 
         this.draw(line);

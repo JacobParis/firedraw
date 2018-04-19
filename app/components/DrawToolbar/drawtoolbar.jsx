@@ -10,14 +10,14 @@ export default class DrawToolbar {
         this.palette = <panel>{blackInk}</panel>;
 
         this.paletteElements = [];
-        for (let colourName of ["red", "yellow", "green", "cyan", "blue", "magenta"]) {
-            const colourInk = <span class={colourName + " ink"} />
-            colourInk.addEventListener('click', () => {
-                this.onOptionSelected(document.defaultView.getComputedStyle(colourInk, null).getPropertyValue('background-color'));
-                this.hideRestOfPalette(colourInk);
+        for (let colorName of ["red", "yellow", "green", "cyan", "blue", "magenta"]) {
+            const colorInk = <span class={colorName + " ink"} />
+            colorInk.addEventListener('click', () => {
+                this.onOptionSelected(document.defaultView.getComputedStyle(colorInk, null).getPropertyValue('background-color'));
+                this.hideRestOfPalette(colorInk);
             });
-            this.paletteElements.push(colourInk);
-            this.palette.appendChild(colourInk);
+            this.paletteElements.push(colorInk);
+            this.palette.appendChild(colorInk);
         }
 
         this.toolbar = (
@@ -27,9 +27,9 @@ export default class DrawToolbar {
         );
     }
 
-    hideRestOfPalette(colourInk) {
+    hideRestOfPalette(colorInk) {
         for (let paletteElement of this.paletteElements) {
-            if (paletteElement == colourInk) continue;
+            if (paletteElement == colorInk) continue;
 
             paletteElement.classList.add("hide");
         }

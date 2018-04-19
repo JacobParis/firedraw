@@ -37,7 +37,7 @@ export default class LetterButtons {
         const topRow = <div class="letters-row" />;
         const bottomRow = <div class="letters-row" />;
         for (let i in letters) {
-            const letterElement = <span class={this.colour + "-dark letter-button"}>{letters[i]}</span>
+            const letterElement = <span class={this.color + "-dark letter-button"}>{letters[i]}</span>
             letterElement.addEventListener('click', () => { this.useLetter(letterElement); });
 
             if(i >= 7) {

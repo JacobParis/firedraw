@@ -27,7 +27,7 @@ export default class Chat {
     render() {
         return (
             <div>
-                <div class={"guess " + this.colour + "-dark"}>
+                <div class={"guess " + this.color + "-dark"}>
                     {this.messageInput}
                     {this.submitButton}
                 </div>

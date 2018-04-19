@@ -1,7 +1,7 @@
 export default class StatusButton {
-    constructor(text, colour) {
-        this.colour = colour;
-        this.button = <button class={`${colour}-text wide primary fix-bottom`} />;
+    constructor(text, color) {
+        this.color = color;
+        this.button = <button class={`${color}-text wide primary fix-bottom`} />;
         this.button.addEventListener('click', () => this.onClick());
 
         if(text) this.setText(text);
@@ -21,13 +21,13 @@ export default class StatusButton {
     }
 
     bold() {
-        this.button.classList.remove(`${this.colour}-text`);
-        this.button.classList.add(`${this.colour}`);
+        this.button.classList.remove(`${this.color}-text`);
+        this.button.classList.add(`${this.color}`);
     }
     
     debold() {
-        this.button.classList.add(`${this.colour}-text`);
-        this.button.classList.remove(`${this.colour}`);
+        this.button.classList.add(`${this.color}-text`);
+        this.button.classList.remove(`${this.color}`);
     }
     
     render () {

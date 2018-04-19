@@ -17,8 +17,8 @@ export default class HomeScene {
         const nameCookie = getCookie('firedraw-name');
         if (nameCookie) this.nameInput.value = nameCookie;
 
-        const colourCookie = getCookie('firedraw-colour');
-        if (colourCookie) this.colour = colourCookie;
+        const colorCookie = getCookie('firedraw-color');
+        if (colorCookie) this.color = colorCookie;
         
         this.submitButton = <button class="primary wide disabled">JOIN</button>;
         this.submitButton.addEventListener('click', () => {
@@ -30,42 +30,42 @@ export default class HomeScene {
             const name = this.nameInput.value.toUpperCase();
             setCookie('firedraw-name', name, 1);
 
-            const colour = this.colour;
-            setCookie('firedraw-colour', colour, 1);
+            const color = this.color;
+            setCookie('firedraw-color', color, 1);
 
             this.router.navigate(`/room/${room}`);
         });
 
-        let selectedColourElement;
-        const colours = ["red", "yellow", "green", "cyan", "blue", "magenta"];
+        let selectedColorElement;
+        const colors = ["red", "yellow", "green", "cyan", "blue", "magenta"];
         this.palette = <div class="palette" />;
-        for(let colour of colours) {
-            const isSelected = this.colour === colour;
+        for(let color of colors) {
+            const isSelected = this.color === color;
             
             // Preselect if we've selected it already
-            const element = <button class={colour} />;
+            const element = <button class={color} />;
             if(isSelected) {
-                selectedColourElement = element;
+                selectedColorElement = element;
                 element.classList.add('selected');
-                this.nameInput.className = `${colour}-text`;
-                this.submitButton.classList.add(`${colour}-dark`);
+                this.nameInput.className = `${color}-text`;
+                this.submitButton.classList.add(`${color}-dark`);
                 this.submitButton.classList.remove("disabled");
             }
 
             element.addEventListener('click', () => {
-                if(selectedColourElement) {
+                if(selectedColorElement) {
                     // Skip if already selected
-                    if(selectedColourElement === element) return;
+                    if(selectedColorElement === element) return;
 
                     // Deselect existing element and select this one
-                    selectedColourElement.classList.remove('selected');
-                    this.submitButton.classList.remove(selectedColourElement.className + "-dark");
+                    selectedColorElement.classList.remove('selected');
+                    this.submitButton.classList.remove(selectedColorElement.className + "-dark");
                 }
-                selectedColourElement = element;
+                selectedColorElement = element;
                 element.classList.add('selected');
-                this.nameInput.className = `${colour}-text`;
-                this.submitButton.classList.add(`${colour}-dark`);
-                this.colour = colour;
+                this.nameInput.className = `${color}-text`;
+                this.submitButton.classList.add(`${color}-dark`);
+                this.color = color;
 
                 this.submitButton.classList.remove("disabled");
 
@@ -92,7 +92,7 @@ export default class HomeScene {
                     </section>
                     <section>
                         <label>
-                            <h2 class="text-center">Enter your name and choose a text colour</h2>
+                            <h2 class="text-center">Enter your name and choose a text color</h2>
                             {this.nameInput}
                         </label>
                         {this.palette}

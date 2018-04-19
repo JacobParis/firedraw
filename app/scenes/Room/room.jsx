@@ -1,4 +1,5 @@
 import Surface from '../components/surface.js';
+import Sunburst from '../components/sunburst.js';
 import DrawToolbar from '../components/drawtoolbar.js';
 import StatusButton from '../components/statusbutton.js';
 import Card from '../components/card.js';
@@ -17,19 +18,20 @@ export default class RoomScene {
         this.room = {
             name: sanitizeString(params.room, 4),
             round: {
-                type: "PAUSE"
+                type: "PAUSE",
+                color: "white"
             }
         }
 
         let nameCookie = getCookie('firedraw-name');
-        const colourCookie = getCookie('firedraw-colour');
+        const colorCookie = getCookie('firedraw-color');
 
-        if (!this.room.name || !nameCookie || !colourCookie) {
+        if (!this.room.name || !nameCookie || !colorCookie) {
             return this.ABORT = true;
         } else {
             console.log('Name', nameCookie);
             this.playerName = nameCookie;
-            this.playerColour = colourCookie;
+            this.playerColor = colorCookie;
         }
 
     }
@@ -40,7 +42,7 @@ export default class RoomScene {
             host = 'http://localhost:8000/';
         }
         this.socket = io.connect(host, {
-            query: `room=${this.room.name}&user=${this.playerName}&colour=${this.playerColour}`,
+            query: `room=${this.room.name}&user=${this.playerName}&color=${this.playerColor}`,
             path: '/io'
         });
         
@@ -77,6 +79,8 @@ export default class RoomScene {
         this.title = <h2>{this.room.name}</h2>;
         this.title.addEventListener('click', () => console.log(this.room));
 
+        this.sunburst = new Sunburst("white");
+
         this.socket.on('message', msg => {
             console.log(msg);
             this.userList.displayMessageFromName(msg.name, msg.text);
@@ -91,16 +95,21 @@ export default class RoomScene {
 
         this.card = new Card();
 
-        this.statusButton = new StatusButton("WAIT YOUR TURN", this.playerColour);
+        this.statusButton = new StatusButton("WAIT YOUR TURN", this.playerColor);
 
         this.surface = new Surface();
         this.socket.on('DRAW-draw', (line, clearBuffer) => this.surface.draw(line, clearBuffer));
-        this.socket.on('start-drawing', (word) => {
-            console.log('on start-drawing');
-            this.beginDrawing(word)
+        
+        // The alpha signal is when my turn starts
+        this.socket.on('alpha', (card) => {
+            // Verify card.type === "DRAW"
+            this.sunburst.setColor(card.color);
+            this.setColor(card.color);
+
+            this.beginDrawing(card.word)
             this.card.resetClick();
 
-            const heading = <h2 class="card-header">{word}</h2>;
+            const heading = <h2 class="card-header">{card.word}</h2>;
             console.log("alpha");
             this.card.setElements([
                 heading,
@@ -109,25 +118,28 @@ export default class RoomScene {
         });
         
         /**
-         * msg
+         * A function called when someone else's turn starts
          * --> name: name of person drawing
          */
-        this.socket.on('DRAW-someoneIsDrawing', (msg) => {
+        this.socket.on('beta', (msg) => {
             this.room.round.type = "DRAW";
+            this.sunburst.setColor(msg.color);
+            this.setColor(msg.color);
 
-            console.log('Someone Is Drawing', msg);
+            console.log('Play round as beta', msg);
             this.surface.canvas.classList.add("raised");
             this.surface.context.clearRect(0, 0, this.surface.canvas.width, this.surface.canvas.height);
             
             if(this.room.currentPlayer !== this.playerName) {
                 console.log("Not you draw");
-                this.title.innerText = this.room.name + ': ' + msg.name + '\'s drawing';
+                this.title.innerText = this.room.name + ': ' + this.room.currentPlayer + '\'s drawing';
                 this.statusButton.hide();
                 this.card.resetClick();
                 this.card.setElements(this.surfaceContainer);
                 this.chatElement.classList.remove("hide");
                 this.chat.loadLetters(msg.letters);
             } else {
+                clearInterval(this.drawingTimer);
                 this.drawingTimer = setInterval(() => this.timerTick(), 1000);
             }
             
@@ -143,12 +155,12 @@ export default class RoomScene {
             console.log("LOSE", msg);
         });
         
-        this.toolbar = new DrawToolbar(selectedColour => {
-            this.surface.selectedColour = selectedColour;
+        this.toolbar = new DrawToolbar(selectedColor => {
+            this.surface.selectedColor = selectedColor;
         });
         
         this.chat = new LetterButtons(this.socket);
-        this.chat.colour = this.playerColour;
+        this.chat.color = this.playerColor;
         //this.chat.messageInput.disabled = false;
         //this.chat.messageInput.focus();
         this.chatElement = this.chat.render();
@@ -165,6 +177,18 @@ export default class RoomScene {
             </section>
         );
 
+        const gameColor = this.room.round.color;
+        this.page = (
+            <main class={gameColor}>
+                {this.sunburst.render()}
+                {this.gameSection}
+                <section class="bottom">
+                    {this.toolbar.render()}
+                    {this.statusButton.render()}
+                    {this.chatElement}
+                </section>
+            </main>
+        );
         this.resetTimer();
         this.onRender();
     }
@@ -172,7 +196,6 @@ export default class RoomScene {
     setMyTurn() {
         console.log("Set my turn");
         //this.isMyTurn = true;
-
 
         clearInterval(this.drawingTimer);
         this.drawingTimer = null;
@@ -217,7 +240,7 @@ export default class RoomScene {
         this.surface.unlock();
         this.surface.onDraw = (point, clearBuffer) => this.socket.emit('DRAW-draw', point, clearBuffer);
         
-        this.surface.selectedColour = '#252525';
+        this.surface.selectedColor = '#252525';
         this.surface.context.clearRect(0, 0, this.surface.canvas.width, this.surface.canvas.height);
         
         this.title.innerText = this.room.name + ': ' + word;
@@ -267,21 +290,12 @@ export default class RoomScene {
         //}
     }
 
+    setColor(color) {
+        this.page.className = color;
+    }
+
     render() {
-        //console.log("RENDERING", this.data);
-        return (
-            <main class={this.playerColour}>
-                <div class={this.playerColour + "-dark-text sunburst"}>
-                    <b /><b /><b /><b /><b /><b /><b /><b /><b />
-                </div>
-                {this.gameSection}
-                <section class="bottom">
-                    {this.toolbar.render()}
-                    {this.statusButton.render()}
-                    {this.chatElement}
-                </section>
-            </main>
-        );
+        return this.page;
     }
     
     onRender() { console.log("Scene Improperly Loaded"); }
