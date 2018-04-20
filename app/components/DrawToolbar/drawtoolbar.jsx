@@ -20,7 +20,7 @@ export default class DrawToolbar {
             this.palette.appendChild(colorInk);
         }
 
-        this.toolbar = (
+        this.container = (
             <div class="game-toolbar hide">
                 {this.palette}
             </div>
@@ -42,14 +42,14 @@ export default class DrawToolbar {
     }
 
     hide() {
-        this.toolbar.classList.add('hide');
+        this.container.classList.add('hide');
     }
 
     show() {
-        this.toolbar.classList.remove('hide');
+        this.container.classList.remove('hide');
     }
     render() {
-        return this.toolbar;
+        return this.container;
     }
 
     onOptionSelected() { console.log( "No Option Selected Callback Set"); }

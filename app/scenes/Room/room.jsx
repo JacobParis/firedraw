@@ -1,10 +1,10 @@
-import Surface from '../components/surface.js';
 import Sunburst from '../components/sunburst.js';
-import DrawToolbar from '../components/drawtoolbar.js';
 import StatusButton from '../components/statusbutton.js';
 import Card from '../components/card.js';
 import UserList from '../components/userlist.js';
 import LetterButtons from '../components/letterbuttons.js';
+
+import CardDraw from '../components/carddraw.js';
 
 import API from '../utilities/apiservice.js';
 const api = new API();
@@ -75,21 +75,13 @@ export default class RoomScene {
     
     onReady() {
         console.log("You have entered room " + this.room.name);
-        
-        this.title = <h2>{this.room.name}</h2>;
-        this.title.addEventListener('click', () => console.log(this.room));
 
         this.sunburst = new Sunburst("white");
 
-        this.socket.on('message', msg => {
-            console.log(msg);
-            this.userList.displayMessageFromName(msg.name, msg.text);
-        });
+        this.socket.on('message', msg => this.userList.displayMessageFromName(msg.name, msg.text));
 
         this.socket.on('end-turn', () => {
-            console.log("on: end-turn");
             this.room.round = { type: "PAUSE" };
-
             this.resetTimer();
         });
 
@@ -97,78 +89,57 @@ export default class RoomScene {
 
         this.statusButton = new StatusButton("WAIT YOUR TURN", this.playerColor);
 
-        this.surface = new Surface();
-        this.socket.on('DRAW-draw', (line, clearBuffer) => this.surface.draw(line, clearBuffer));
+        // FACTOR
+        this.cardModules = {
+            DRAW: new CardDraw(this.socket)
+        };
+
         
         // The alpha signal is when my turn starts
         this.socket.on('alpha', (card) => {
-            // Verify card.type === "DRAW"
-            this.sunburst.setColor(card.color);
+            console.log('Play round as alpha', card);
             this.setColor(card.color);
+            this.setRoundType(card.type);
 
-            this.beginDrawing(card.word)
-            this.card.resetClick();
+            
+            const cardModule = this.cardModules[card.type];
+            cardModule.alphaMode();
+            this.toolbar.innerHTML = "";
+            this.toolbar.appendChild(cardModule.toolbar);
+
+            this.cardContainer.classList.add("maximize");
+            this.userList.list.classList.add("hide-small");
 
             const heading = <h2 class="card-header">{card.word}</h2>;
-            console.log("alpha");
+            this.card.resetClick();
             this.card.setElements([
                 heading,
-                this.surfaceContainer
+                cardModule.container
             ]);
+
+            this.startTimer();
         });
         
         /**
-         * A function called when someone else's turn starts
+         * A function called when anyone's turn starts
          * --> name: name of person drawing
          */
-        this.socket.on('beta', (msg) => {
-            this.room.round.type = "DRAW";
-            this.sunburst.setColor(msg.color);
-            this.setColor(msg.color);
+        this.socket.on('beta', (card) => {
+            console.log('Play round as beta', card);
+            this.setColor(card.color);
+            this.setRoundType(card.type);
 
-            console.log('Play round as beta', msg);
-            this.surface.canvas.classList.add("raised");
-            this.surface.context.clearRect(0, 0, this.surface.canvas.width, this.surface.canvas.height);
-            
-            if(this.room.currentPlayer !== this.playerName) {
-                console.log("Not you draw");
-                this.title.innerText = this.room.name + ': ' + this.room.currentPlayer + '\'s drawing';
-                this.statusButton.hide();
-                this.card.resetClick();
-                this.card.setElements(this.surfaceContainer);
-                this.chatElement.classList.remove("hide");
-                this.chat.loadLetters(msg.letters);
-            } else {
-                clearInterval(this.drawingTimer);
-                this.drawingTimer = setInterval(() => this.timerTick(), 1000);
-            }
-            
-            // turn on drawing timer
-            // Modal or chat notify someone is drawing?
+            const cardModule = this.cardModules[card.type];
+            cardModule.betaMode(card.letters);
+            this.toolbar.innerHTML = "";
+            this.toolbar.appendChild(cardModule.toolbar);
+
+            this.statusButton.hide();
+            this.card.resetClick();
+            this.card.setElements(cardModule.container);
         });
-        
-        this.socket.on('DRAW-wordGuessed', (msg) => {
-            console.log("CORRECT", msg);
-        });
-        
-        this.socket.on('DRAW-wordNotGuessed', (msg) => {
-            console.log("LOSE", msg);
-        });
-        
-        this.toolbar = new DrawToolbar(selectedColor => {
-            this.surface.selectedColor = selectedColor;
-        });
-        
-        this.chat = new LetterButtons(this.socket);
-        this.chat.color = this.playerColor;
-        //this.chat.messageInput.disabled = false;
-        //this.chat.messageInput.focus();
-        this.chatElement = this.chat.render();
-        this.chatElement.classList.add("fix-bottom");
-        this.chatElement.classList.add("hide");
         
         this.cardContainer = this.card.card;
-        this.surfaceContainer = this.surface.render();
 
         this.gameSection = (
             <section class="section-game">
@@ -178,25 +149,27 @@ export default class RoomScene {
         );
 
         const gameColor = this.room.round.color;
+
+        this.toolbar = <span />;
         this.page = (
             <main class={gameColor}>
                 {this.sunburst.render()}
                 {this.gameSection}
                 <section class="bottom">
-                    {this.toolbar.render()}
                     {this.statusButton.render()}
-                    {this.chatElement}
+                    {this.toolbar}
                 </section>
             </main>
         );
         this.resetTimer();
         this.onRender();
     }
-    
+  
     setMyTurn() {
         console.log("Set my turn");
         //this.isMyTurn = true;
 
+        // FACTOR
         clearInterval(this.drawingTimer);
         this.drawingTimer = null;
 
@@ -212,8 +185,8 @@ export default class RoomScene {
         };
       
         // Hide the game toolbar
-        this.toolbar.hide();
-        this.chatElement.classList.add("hide");
+        this.cardModules["DRAW"].drawToolbar.hide();
+        this.cardModules["DRAW"].letterToolbar.hide();
         
         // Show the card that starts the round
         console.log("delta");
@@ -221,33 +194,12 @@ export default class RoomScene {
         this.card.onClick = () => {
             this.socket.emit('request-card');
             this.card.resetClick();
-            //this.socket.emit('DRAW-ready');
-
-            //this.card.setElements(this.surfaceContainer);
         }
     }
     
-    beginDrawing(word) {
-        // Change turn button to skip turn
-        this.statusButton.bold();
-        
-        // Maximize the cards
-        // TODO consolidate to a single element
-        this.surfaceContainer.classList.add("maximise");
-        this.cardContainer.classList.add("maximise");
-        this.userList.list.classList.add("hide-small");
-
-        this.surface.unlock();
-        this.surface.onDraw = (point, clearBuffer) => this.socket.emit('DRAW-draw', point, clearBuffer);
-        
-        this.surface.selectedColor = '#252525';
-        this.surface.context.clearRect(0, 0, this.surface.canvas.width, this.surface.canvas.height);
-        
-        this.title.innerText = this.room.name + ': ' + word;
-        //this.drawNow.innerText = 'GIVE UP DRAWING (' + this.timeLeft + ')';
-        
-        this.toolbar.show();
-        this.toolbar.showFullPalette();
+    setRoundType(type) {
+        // TODO verify this client supports the type
+        this.room.round.type = type;
     }
 
     resetTimer() {
@@ -258,25 +210,24 @@ export default class RoomScene {
 
         // Minimize the cards
         // TODO consolidate to a single element
-        this.surfaceContainer.classList.remove("maximise");
-        this.cardContainer.classList.remove("maximise");
+        this.cardModules["DRAW"].minimize();
+        this.cardContainer.classList.remove("maximize");
         this.userList.list.classList.remove("hide-small");
 
-
-        this.title.innerText = this.room.name;
         this.statusButton.setText("WAIT YOUR TURN");
         this.statusButton.show();
         
-        this.toolbar.hide();
-        //this.isMyTurn = false;
-
-        // DRAW
-        //this.surface.isMyTurn = false;
-        this.surface.lock();
-        this.surface.onDraw = () => console.log("Surface not emitting");
-        this.surface.canvas.classList.remove('raised');
-        this.chatElement.classList.add("hide");
+        this.cardModules["DRAW"].surface.lock();
+        this.cardModules["DRAW"].surface.onDraw = () => console.log("Surface not emitting");
         
+        this.cardModules["DRAW"].drawToolbar.hide();
+        this.cardModules["DRAW"].letterToolbar.hide();
+        
+    }
+
+    startTimer() {
+        clearInterval(this.drawingTimer);
+        this.drawingTimer = setInterval(() => this.timerTick(), 1000);
     }
 
     timerTick() {
@@ -291,6 +242,7 @@ export default class RoomScene {
     }
 
     setColor(color) {
+        this.sunburst.setColor(color);
         this.page.className = color;
     }
 

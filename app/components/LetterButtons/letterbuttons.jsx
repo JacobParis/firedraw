@@ -10,6 +10,16 @@ export default class LetterButtons {
         this.letterElements = [];
         this.submitButton = <button class="letters-submit" >-></button>
         this.submitButton.addEventListener('click', () => this.sendMessage());
+
+        this.container = (
+            <div class="fix-bottom">
+                <div class={"guess"}>
+                    {this.display}
+                    {this.letters}
+                    {this.submitButton}
+                </div>
+            </div>
+        );
     }
 
     sendMessage() {
@@ -66,16 +76,16 @@ export default class LetterButtons {
         console.log('Message', this.message);
     }
 
+    hide() {
+        this.container.classList.add("hide");
+    }
+
+    show() {
+        this.container.classList.remove("hide");
+    }
+    
     render() {
-        return (
-            <div>
-                <div class={"guess"}>
-                    {this.display}
-                    {this.letters}
-                    {this.submitButton}
-                </div>
-            </div>
-        );
+        return this.container;
     }
 
 }
