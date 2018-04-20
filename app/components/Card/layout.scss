@@ -6,7 +6,7 @@
     padding: 5rem;
     transition: padding 1s;
     transform-style: preserve-3d;
-    &.maximise {
+    &.maximize {
         @media (max-width: 300px) {
             padding: 0;
             .card-face {
