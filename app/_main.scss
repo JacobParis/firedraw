@@ -100,9 +100,9 @@ main {
     //display: flex;
     //position: relative;
     .surface-container {
-        &.maximise {
+        &.maximize {
             @media (max-width: 450px) {
-                padding: 0;
+                padding: 1rem;
                 #canvas {
                     max-width: 450px;
                 }
@@ -118,7 +118,7 @@ main {
         transition: padding 1s;
         transform-style: preserve-3d;
         &.maximize {
-            @media (max-width: 300px) {
+            @media (max-width: 450px) {
                 padding: 0;
             }
         }

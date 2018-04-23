@@ -92,13 +92,15 @@ export default class RoomScene {
             DRAWFUL: new CardDrawful({ socket: this.socket, color: this.playerColor })
         };
         
-
+        this.innerGameSection = (
+            <div class="section-game-inner">
+                {this.card.container}
+            </div>
+        );
         this.gameSection = (
             <section class="section-game">
                 {this.userList.render()}
-                <div class="section-game-inner">
-                    {this.card.container}
-                </div>
+                {this.innerGameSection}
             </section>
         );
 
@@ -135,7 +137,7 @@ export default class RoomScene {
         this.toolbar.appendChild(cardModule.toolbar);
 
         if (card.maximize) {
-            this.card.container.classList.add("maximize");
+            this.innerGameSection.classList.add("maximize");
             this.userList.list.classList.add("hide-small");
         }
         
@@ -204,7 +206,7 @@ export default class RoomScene {
 
         // Minimize the cards
         // TODO consolidate to a single element
-        this.card.container.classList.remove("maximize");
+        this.innerGameSection.classList.remove("maximize");
         this.userList.list.classList.remove("hide-small");
         
         this.statusButton.setText("WAIT YOUR TURN");
