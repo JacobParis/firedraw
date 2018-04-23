@@ -109,6 +109,20 @@ main {
             }
         }
     }
+    &-inner {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 5rem;
+        transition: padding 1s;
+        transform-style: preserve-3d;
+        &.maximize {
+            @media (max-width: 300px) {
+                padding: 0;
+            }
+        }
+    }
 }
 
 #canvas {

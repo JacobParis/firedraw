@@ -88,14 +88,17 @@ export default class RoomScene {
         this.statusButton = new StatusButton("WAIT YOUR TURN", this.playerColor);
 
         this.cardModules = {
-            DRAW: new CardDraw(this.socket),
-            DRAWFUL: new CardDrawful(this.socket)
+            DRAW: new CardDraw({socket: this.socket, color: this.playerColor}),
+            DRAWFUL: new CardDrawful({ socket: this.socket, color: this.playerColor })
         };
         
+
         this.gameSection = (
             <section class="section-game">
                 {this.userList.render()}
-                {this.card.container}
+                <div class="section-game-inner">
+                    {this.card.container}
+                </div>
             </section>
         );
 

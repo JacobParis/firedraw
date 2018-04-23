@@ -3,8 +3,8 @@ import DrawToolbar from '../components/drawtoolbar.js';
 
 export default class CardDrawful {
 
-    constructor(socket) {
-        this.socket = socket;
+    constructor(config) {
+        this.socket = config.socket;
 
         this.surface = new Surface();
         this.container = this.surface.render();
@@ -12,7 +12,8 @@ export default class CardDrawful {
         this.drawToolbar = new DrawToolbar(selectedColor => {
             this.surface.selectedColor = selectedColor;
         });
-
+   
+        //if(config.color) this.setColor(config.color);
     }
 
     /**

@@ -4,26 +4,24 @@ import DrawToolbar from '../components/drawtoolbar.js';
 
 export default class CardDraw {
 
-    constructor(socket) {
-        this.socket = socket;
+    constructor(config) {
+        this.socket = config.socket;
 
         this.surface = new Surface();
         this.container = this.surface.render();
         
         this.letterToolbar = new LetterButtons(this.socket);
-        //this.letterToolbar.hide();
-        //this.letterToolbar.color = this.playerColor;
 
         this.drawToolbar = new DrawToolbar(selectedColor => {
             this.surface.selectedColor = selectedColor;
         });
-        //this.drawToolbar.hide();
 
         this.socket.on('DRAW-draw', (array) => {
             console.log('remote draw');
             this.surface.draw(array[0], array[1])
         });
         
+        if(config.color) this.setColor(config.color);
     }
 
     /**
@@ -76,5 +74,9 @@ export default class CardDraw {
 
         this.drawToolbar.hide();
         this.letterToolbar.hide();
+    }
+
+    setColor(color) {
+        this.letterToolbar.color = color;
     }
 }
