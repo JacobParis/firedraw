@@ -4,14 +4,21 @@ export default class StatusButton {
         this.button = <button class={`${color}-text wide primary fix-bottom`} />;
         this.button.addEventListener('click', () => this.onClick());
 
-        if(text) this.setText(text);
+        if(text) {
+            this.text = text;
+            this.setText(text);
+        }
     }
 
     setText(text) {
-        this.button.innerText = text;
+        this.text = text;
+        this.button.innerText = this.text;
     }
 
-
+    displayText(text) {
+        this.button.innerText = text;
+    }
+    
     hide() {
         this.button.classList.add("hide");
     }

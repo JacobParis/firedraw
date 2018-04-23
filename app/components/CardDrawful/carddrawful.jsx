@@ -1,29 +1,18 @@
 import Surface from '../components/surface.js';
-import LetterButtons from '../components/letterbuttons.js';
 import DrawToolbar from '../components/drawtoolbar.js';
 
-export default class CardDraw {
+export default class CardDrawful {
 
     constructor(socket) {
         this.socket = socket;
 
         this.surface = new Surface();
         this.container = this.surface.render();
-        
-        this.letterToolbar = new LetterButtons(this.socket);
-        //this.letterToolbar.hide();
-        //this.letterToolbar.color = this.playerColor;
 
         this.drawToolbar = new DrawToolbar(selectedColor => {
             this.surface.selectedColor = selectedColor;
         });
-        //this.drawToolbar.hide();
 
-        this.socket.on('DRAW-draw', (array) => {
-            console.log('remote draw');
-            this.surface.draw(array[0], array[1])
-        });
-        
     }
 
     /**
@@ -36,7 +25,6 @@ export default class CardDraw {
         this.maximize();
 
         this.surface.unlock();
-        this.surface.onDraw = (point, clearBuffer) => { console.log(this.socket); this.socket.emit('DRAW-draw', point, clearBuffer)};
 
         this.surface.selectedColor = '#252525';
         this.surface.context.clearRect(0, 0, this.surface.canvas.width, this.surface.canvas.height);
@@ -44,17 +32,10 @@ export default class CardDraw {
         this.toolbar = this.drawToolbar.container;
         this.drawToolbar.show();
         this.drawToolbar.showFullPalette();
-
-        console.log(this);
     }
 
-    betaMode(letters) {
-        this.surface.context.clearRect(0, 0, this.surface.canvas.width, this.surface.canvas.height);
-        this.surface.lock();
-        this.toolbar = this.letterToolbar.container;
-        this.letterToolbar.loadLetters(letters);
-        this.letterToolbar.show();
-        console.log(this);
+    betaMode() {
+        this.alphaMode();
     }
 
     /**
@@ -75,6 +56,5 @@ export default class CardDraw {
         this.surface.onDraw = () => console.log("Surface not emitting");
 
         this.drawToolbar.hide();
-        this.letterToolbar.hide();
     }
 }

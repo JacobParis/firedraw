@@ -2,7 +2,7 @@ export default class Card {
     constructor() {
         this.face = <div class="card-face" />;
         this.face.addEventListener('click', () => this.onClick());
-        this.card = <div class="card"> {this.face} </div>;
+        this.container = <div class="card"> {this.face} </div>;
     }
 
     setElements(elements) {
@@ -14,20 +14,24 @@ export default class Card {
         if(!elements) return;
         if(!elements.length) elements = [elements];
 
-        for(let element of elements) {
-            this.face.appendChild(element);
-        }
+        for(const element of elements) this.addElement(element);
+    }
+
+    addElement(element) {
+        if(!element) return;
+
+        this.face.appendChild(element);
     }
 
     show() {
-        this.card.classList.remove('hide');
+        this.container.classList.remove('hide');
     }
 
     hide() {
-        this.card.classList.add('hide');
+        this.container.classList.add('hide');
     }
     render() {
-        return this.card;
+        return this.container;
     }
 
     resetClick() {

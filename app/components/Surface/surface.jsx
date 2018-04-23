@@ -12,7 +12,7 @@ export default class Surface {
                 //drawLayer.width(drawLayer.clientWidth);
                 this.context.lineJoin = 'round';
 
-                for(let line of canvasToDraw) {
+                for(const line of canvasToDraw) {
                     if (line.stop) { continue; }
                     this.context.strokeStyle = line.color;
                     this.context.lineWidth = 10;
@@ -51,7 +51,7 @@ export default class Surface {
         const palette = <panel>{this.blackInk}</panel>;
 
         this.paletteElements = [];
-        for(let colorName of ["red", "yellow", "green", "cyan", "blue", "magenta"]) {
+        for(const colorName of ["red", "yellow", "green", "cyan", "blue", "magenta"]) {
             const colorInk = <span class={colorName + " ink"} />
             colorInk.addEventListener('click', () => {
                 this.selectedColor = document.defaultView.getComputedStyle(colorInk, null).getPropertyValue('background-color');
@@ -178,8 +178,8 @@ export default class Surface {
             //Divide the sum to get the average
             point.to.x /= ((weightedPeriod * (weightedPeriod + 1)) / 2);
             point.to.y /= ((weightedPeriod * (weightedPeriod + 1)) / 2);
-            delta.x = Math.abs(point.to.x - this.points[0].to.x);
-            delta.y = Math.abs(point.to.y - this.points[0].to.y);
+            delta.x = point.to.x - this.points[0].to.x;
+            delta.y = point.to.y - this.points[0].to.y;
 
             //Set the next source to the current destination
             this.points[1].from = point.to;
@@ -208,8 +208,8 @@ export default class Surface {
             point.from.y /= ((this.points.length * (this.points.length + 1)) / 2);
             point.to.x /= ((this.points.length * (this.points.length + 1)) / 2);
             point.to.y /= ((this.points.length * (this.points.length + 1)) / 2);
-            delta.x = Math.abs(point.to.x - this.points[0].to.x);
-            delta.y = Math.abs(point.to.y - this.points[0].to.y);
+            delta.x = point.to.x - this.points[0].to.x;
+            delta.y = point.to.y - this.points[0].to.y;
         }
 
         const velocity = Math.cbrt(Math.pow(delta.x, 2) + Math.pow(delta.y, 2));
@@ -261,8 +261,8 @@ export default class Surface {
             //Divide the sum to get the average
             point.to.x /= ((this.points.length * (this.points.length + 1)) / 2);
             point.to.y /= ((this.points.length * (this.points.length + 1)) / 2);
-            delta.x = Math.abs(point.to.x - this.points[0].to.x);
-            delta.y = Math.abs(point.to.y - this.points[0].to.y);
+            delta.x = point.to.x - this.points[0].to.x;
+            delta.y = point.to.y - this.points[0].to.y;
             let velocity = Math.cbrt(Math.pow(delta.x, 2) + Math.pow(delta.y, 2));
             //Set the next source to the current destination
             this.points[1].from = point.to;
