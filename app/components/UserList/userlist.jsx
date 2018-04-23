@@ -19,19 +19,21 @@ export default class UserList {
     }
 
     setUsers(users) {
+        console.log("USERS", users);
         // Add new users
-        for(let i in users) {
-            const name = users[i];
-            if(Reflect.has(this.users, name)) {
+        for(const i in users) {
+            const user = users[i];
+            if(Reflect.has(this.users, user.name)) {
                 // We already had this user, just update the queue position
-                this.users[name].position = i;
-                this.users[name].keep = true;
+                this.users[user.name].position = i;
+                this.users[user.name].keep = true;
             } else {
-                this.users[name] = {
+                this.users[user.name] = {
                     position: i,
-                    name: name,
-                    color: "cyan",//user.color,
+                    name: user.name,
+                    color: user.color,
                     keep: true
+                    // should have color here?
                 };
             }
         }
@@ -50,15 +52,16 @@ export default class UserList {
 
         this.list.innerHTML = "";
         
-        for(const name of users) {
-            const initial = name.charAt(0);
-            const element = <li><span class={"user-bubble "}>{initial}</span></li>
+        for(const user of users) {
 
-            if (this.currentUser === name) {
+            const initial = user.name.charAt(0);
+            const element = <li><span class={"user-bubble " + user.color}>{initial}</span></li>
+
+            if (this.currentUser === user.name) {
                 element.classList.add("current");
             }
 
-            this.users[name].element = element;
+            this.users[user.name].element = element;
 
             this.list.appendChild(element);
         }
