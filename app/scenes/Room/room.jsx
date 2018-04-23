@@ -143,7 +143,7 @@ export default class RoomScene {
         if (card.skip) this.showSkip();
         if (card.timer) this.startTimer(card.timer);
     }
-    
+
     setMyTurn() {
         console.log("Set my turn");
         //this.isMyTurn = true;
@@ -152,22 +152,39 @@ export default class RoomScene {
         clearInterval(this.drawingTimer);
         this.drawingTimer = null;
         
+        this.statusButton.show();
+        this.statusButton.setText("DRAW A CARD");
+        this.statusButton.onClick = () => this.requestCard();
+
         // Show the card that starts the round
         console.log("delta");
         this.card.setElements(<p class="card-center-text">CARD</p>);
-        this.card.onClick = () => {
-            this.socket.emit('request-card');
-            this.card.resetClick();
-        }
+        this.card.onClick = () => this.requestCard();
     }
     
+    /**
+     * Emits request-card and resets click handlers for CARD and STATUSBUTTON
+     */
+    requestCard() {
+        this.socket.emit('request-card');
+        this.card.resetClick();
+        this.statusButton.resetClick();
+    }
+
+    /**
+     * Shows STATUSBUTTON and sets to emit end-turn and end round when clicked
+     */
     showSkip() {
         this.statusButton.show();
         this.statusButton.setText("SKIP TURN");
-        this.statusButton.onClick = () => {
-            this.socket.emit('end-turn', { reason: "SKIP" });
-            this.endRound();
-        };
+
+        // Stops us from autoskipping when a skippable round starts
+        setTimeout(() => {
+            this.statusButton.onClick = () => {
+                this.socket.emit('end-turn', { reason: "SKIP" });
+                this.endRound();
+            };
+        }, 500);
     }
 
     endRound() {

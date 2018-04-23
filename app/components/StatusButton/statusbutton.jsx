@@ -1,7 +1,7 @@
 export default class StatusButton {
     constructor(text, color) {
         this.color = color;
-        this.button = <button class={`${color}-text wide primary fix-bottom`} />;
+        this.button = <button class={`${color} wide primary fix-bottom`} />;
         this.button.addEventListener('click', () => this.onClick());
 
         if(text) {
@@ -18,7 +18,7 @@ export default class StatusButton {
     displayText(text) {
         this.button.innerText = text;
     }
-    
+
     hide() {
         this.button.classList.add("hide");
     }
@@ -41,5 +41,11 @@ export default class StatusButton {
         return this.button;
     }
 
+    resetClick() {
+        this.onClick = () => {
+            console.log("No click handler set");
+        }
+    }
+    
     onClick() { console.log("No Click Handler Set"); }
 }
