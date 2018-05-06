@@ -17,7 +17,7 @@ function initRouter() {
         return;
     }
 
-    const root = "http://localhost:8000/";
+    const root = "http://firedraw.ca/";
     console.log(root);
     router = new Navigo(root);
     router.on({

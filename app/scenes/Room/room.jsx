@@ -38,12 +38,12 @@ export default class RoomScene {
     }
 
     load() { 
-        let host = 'http://firedraw.ca/';
+        let host = 'http://hexagon.jacobpariseau.com/';
         if (document.baseURI.endsWith("?dev")) {
             host = 'http://localhost:8000/';
         }
         this.socket = io.connect(host, {
-            query: `room=${this.room.name}&user=${this.playerName}&color=${this.playerColor}`,
+            query: `room=${this.room.name}&user=${this.playerName}&color=${this.playerColor}&game=firedraw`,
             path: '/io'
         });
         
